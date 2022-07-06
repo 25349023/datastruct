@@ -5,13 +5,13 @@ import (
 	"math"
 )
 
-type BHeapNode struct {
+type bHeapNode struct {
 	data              int
 	degree            int
-	child, prev, next *BHeapNode
+	child, prev, next *bHeapNode
 }
 
-func findMinNode(list *BHeapNode) *BHeapNode {
+func findMinNode(list *bHeapNode) *bHeapNode {
 	if list == nil {
 		return nil
 	}
@@ -25,14 +25,14 @@ func findMinNode(list *BHeapNode) *BHeapNode {
 	return min
 }
 
-func mergeLists(x, y *BHeapNode) {
+func mergeLists(x, y *bHeapNode) {
 	x.next.prev = y.prev
 	y.prev.next = x.next
 	x.next = y
 	y.prev = x
 }
 
-func joinMinTrees(x, y *BHeapNode) *BHeapNode {
+func joinMinTrees(x, y *bHeapNode) *bHeapNode {
 	if y == nil {
 		return x
 	}
@@ -41,22 +41,22 @@ func joinMinTrees(x, y *BHeapNode) *BHeapNode {
 	}
 
 	if x.data < y.data {
-		x.AddChild(y)
+		x.addChild(y)
 		return x
 	} else {
-		y.AddChild(x)
+		y.addChild(x)
 		return y
 	}
 }
 
-func (head *BHeapNode) AddSibling(s *BHeapNode) {
+func (head *bHeapNode) addSibling(s *bHeapNode) {
 	s.next = head
 	s.prev = head.prev
 	head.prev.next = s
 	head.prev = s
 }
 
-func (head *BHeapNode) AddChild(ch *BHeapNode) {
+func (head *bHeapNode) addChild(ch *bHeapNode) {
 	if ch == nil {
 		return
 	}
@@ -66,15 +66,16 @@ func (head *BHeapNode) AddChild(ch *BHeapNode) {
 		return
 	}
 
-	head.child.AddSibling(ch)
+	head.child.addSibling(ch)
 	head.degree++
 }
 
 type BinomialHeap struct {
-	min *BHeapNode
+	min *bHeapNode
 	n   int
 }
 
+// Min peeks and returns the minimum of the heap.
 func (b *BinomialHeap) Min() (int, error) {
 	if b.Empty() {
 		return 0, fmt.Errorf("heap is empty")
@@ -82,13 +83,14 @@ func (b *BinomialHeap) Min() (int, error) {
 	return b.min.data, nil
 }
 
+// Empty returns whether the heap is empty or not.
 func (b *BinomialHeap) Empty() bool {
 	return b.min == nil
 }
 
-// Insert `x` into the BinomialHeap
+// Insert x into the BinomialHeap.
 func (b *BinomialHeap) Insert(x int) {
-	node := &BHeapNode{data: x}
+	node := &bHeapNode{data: x}
 
 	defer func() { b.n++ }()
 
@@ -97,14 +99,15 @@ func (b *BinomialHeap) Insert(x int) {
 		return
 	}
 
-	b.min.AddSibling(node)
+	b.min.addSibling(node)
 
 	if x < b.min.data {
 		b.min = node
 	}
 }
 
-// DeleteMin pops the minimum from the BinomialHeap then returns it
+// DeleteMin pops the minimum from the BinomialHeap then returns it,
+// error if the heap is empty.
 func (b *BinomialHeap) DeleteMin() (int, error) {
 	if b.Empty() {
 		return 0, fmt.Errorf("cannot delete-min from empty binomial heap")
@@ -138,9 +141,9 @@ func (b *BinomialHeap) DeleteMin() (int, error) {
 	return minValue, nil
 }
 
-func (b *BinomialHeap) mergeSameDegreeTrees() []*BHeapNode {
+func (b *BinomialHeap) mergeSameDegreeTrees() []*bHeapNode {
 	maxDegree := int(math.Log2(float64(b.n))) + 1
-	trees := make([]*BHeapNode, maxDegree)
+	trees := make([]*bHeapNode, maxDegree)
 
 	for p, next := b.min, b.min.next; ; p, next = next, next.next {
 		d := p.degree
@@ -157,7 +160,7 @@ func (b *BinomialHeap) mergeSameDegreeTrees() []*BHeapNode {
 	return trees
 }
 
-func (b *BinomialHeap) relink(trees []*BHeapNode) {
+func (b *BinomialHeap) relink(trees []*bHeapNode) {
 	b.min = nil
 	for _, node := range trees {
 		if node == nil {
@@ -166,7 +169,7 @@ func (b *BinomialHeap) relink(trees []*BHeapNode) {
 		if b.min == nil {
 			b.min, node.next, node.prev = node, node, node
 		} else {
-			b.min.AddSibling(node)
+			b.min.addSibling(node)
 			if node.data < b.min.data {
 				b.min = node
 			}
@@ -174,7 +177,8 @@ func (b *BinomialHeap) relink(trees []*BHeapNode) {
 	}
 }
 
-// Meld two BinomialHeap; leave `other` empty
+// Meld two BinomialHeap and leave other empty,
+// error if the underlying type of other is not BinomialHeap
 func (b *BinomialHeap) Meld(other MeldablePQ) error {
 	if other, ok := other.(*BinomialHeap); ok {
 		if other.Empty() {
