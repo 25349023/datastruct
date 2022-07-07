@@ -1,7 +1,6 @@
 package priorityqueue
 
 import (
-	"log"
 	"testing"
 )
 
@@ -87,7 +86,7 @@ func TestBinomialHeap_Meld(t *testing.T) {
 	// b1 == b2 == empty
 	err := b1.Meld(&b2)
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 	if !b1.Empty() || !b2.Empty() {
 		t.Fatal("both b1 and b2 should be empty")
@@ -98,9 +97,9 @@ func TestBinomialHeap_Meld(t *testing.T) {
 	b1.Insert(2)
 	err = b1.Meld(&b2)
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
-	if !b2.Empty() {
+	if !b2.Empty() || b2.n != 0 {
 		t.Fatal("b2 should be empty")
 	}
 	if b1.n != 2 {
@@ -111,20 +110,20 @@ func TestBinomialHeap_Meld(t *testing.T) {
 	}
 
 	// b1 == empty, b2 != empty
-	err = b2.Meld(&b1)
+	b1, b2 = b2, b1
+	err = b1.Meld(&b2)
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
-	if !b1.Empty() {
-		t.Fatal("b1 should be empty")
+	if !b2.Empty() || b2.n != 0 {
+		t.Fatal("b2 should be empty")
 	}
-	if b2.n != 2 {
-		t.Fatal("b2.n should be 2")
+	if b1.n != 2 {
+		t.Fatal("b1.n should be 2")
 	}
-	if y, _ := b2.Min(); y != 1 {
-		t.Fatal("b2.Min() should be 1")
+	if y, _ := b1.Min(); y != 1 {
+		t.Fatal("b1.Min() should be 1")
 	}
-
 }
 
 func TestBinomialHeap_Meld2(t *testing.T) {
@@ -138,15 +137,15 @@ func TestBinomialHeap_Meld2(t *testing.T) {
 
 	err := b1.Meld(&b2)
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
-	if !b2.Empty() {
-		log.Fatal("b2 should be empty after Meld")
+	if !b2.Empty() || b2.n != 0 {
+		t.Fatal("b2 should be empty")
 	}
 
 	if b1.n != 10 {
-		log.Fatal("b1.n should be 10, got", b1.n)
+		t.Fatal("b1.n should be 10, got", b1.n)
 	}
 
 	if y, _ := b1.Min(); y != 1 {
@@ -156,12 +155,12 @@ func TestBinomialHeap_Meld2(t *testing.T) {
 	for ans := 1; !b1.Empty(); ans++ {
 		v, _ := b1.DeleteMin()
 		if v != ans {
-			log.Fatalf("got %d, expect %d", v, ans)
+			t.Fatalf("got %d, expect %d", v, ans)
 		}
 	}
 
 	if !b1.Empty() {
-		log.Fatal("b1 should be empty after delete elements")
+		t.Fatal("b1 should be empty after delete elements")
 	}
 }
 
@@ -171,6 +170,6 @@ func TestBinomialHeap_Meld3(t *testing.T) {
 
 	err := b1.Meld(m)
 	if err == nil {
-		log.Fatal("should report error when other is not Binomial Heap")
+		t.Fatal("should report error when other is not Binomial Heap")
 	}
 }
