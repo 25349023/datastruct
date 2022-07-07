@@ -70,6 +70,8 @@ func (head *bHeapNode) addChild(ch *bHeapNode) {
 	head.degree++
 }
 
+// BinomialHeap implementation that is introduced in
+// 'Fundamentals of Data Structures in C'
 type BinomialHeap struct {
 	min *bHeapNode
 	n   int
