@@ -25,15 +25,15 @@ func (b *BinomialHeap) Empty() bool {
 	return b.min == nil
 }
 
-// Insert x into the BinomialHeap.
-func (b *BinomialHeap) Insert(x int) {
+// Insert x into the BinomialHeap and return the inserted node.
+func (b *BinomialHeap) Insert(x int) BiDirTreeNode {
 	node := &bHeapNode{data: x}
 
 	defer func() { b.n++ }()
 
 	if b.min == nil {
 		b.min, node.prev, node.next = node, node, node
-		return
+		return node
 	}
 
 	b.min.AddSibling(node)
@@ -41,6 +41,8 @@ func (b *BinomialHeap) Insert(x int) {
 	if x < b.min.data {
 		b.min = node
 	}
+
+	return node
 }
 
 // DeleteMin pops the minimum from the BinomialHeap then returns it,
