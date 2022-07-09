@@ -5,71 +5,6 @@ import (
 	"math"
 )
 
-type bHeapNode struct {
-	data              int
-	degree            int
-	child, prev, next *bHeapNode
-}
-
-func findMinNode(list *bHeapNode) *bHeapNode {
-	if list == nil {
-		return nil
-	}
-
-	min := list
-	for curr := list.next; curr != list; curr = curr.next {
-		if curr.data < min.data {
-			min = curr
-		}
-	}
-	return min
-}
-
-func mergeLists(x, y *bHeapNode) {
-	x.next.prev = y.prev
-	y.prev.next = x.next
-	x.next = y
-	y.prev = x
-}
-
-func joinMinTrees(x, y *bHeapNode) *bHeapNode {
-	if y == nil {
-		return x
-	}
-	if x == nil {
-		return y
-	}
-
-	if x.data < y.data {
-		x.addChild(y)
-		return x
-	} else {
-		y.addChild(x)
-		return y
-	}
-}
-
-func (head *bHeapNode) addSibling(s *bHeapNode) {
-	s.next = head
-	s.prev = head.prev
-	head.prev.next = s
-	head.prev = s
-}
-
-func (head *bHeapNode) addChild(ch *bHeapNode) {
-	if ch == nil {
-		return
-	}
-	if head.child == nil {
-		head.child, ch.next, ch.prev = ch, ch, ch
-		head.degree = 1
-		return
-	}
-
-	head.child.addSibling(ch)
-	head.degree++
-}
-
 // BinomialHeap implementation that is introduced in
 // 'Fundamentals of Data Structures in C'
 type BinomialHeap struct {
@@ -101,7 +36,7 @@ func (b *BinomialHeap) Insert(x int) {
 		return
 	}
 
-	b.min.addSibling(node)
+	b.min.AddSibling(node)
 
 	if x < b.min.data {
 		b.min = node
@@ -120,7 +55,7 @@ func (b *BinomialHeap) DeleteMin() (int, error) {
 	minValue := b.min.data
 
 	if b.min.next == b.min {
-		b.min = findMinNode(b.min.child)
+		b.min = findMinNode(b.min.child).(*bHeapNode)
 		return minValue, nil
 	}
 
@@ -150,7 +85,7 @@ func (b *BinomialHeap) mergeSameDegreeTrees() []*bHeapNode {
 	for p, next := b.min, b.min.next; ; p, next = next, next.next {
 		d := p.degree
 		for ; trees[d] != nil; d++ {
-			p = joinMinTrees(p, trees[d])
+			p = joinMinTrees(p, trees[d]).(*bHeapNode)
 			trees[d] = nil
 		}
 		trees[d] = p
@@ -171,7 +106,7 @@ func (b *BinomialHeap) relink(trees []*bHeapNode) {
 		if b.min == nil {
 			b.min, node.next, node.prev = node, node, node
 		} else {
-			b.min.addSibling(node)
+			b.min.AddSibling(node)
 			if node.data < b.min.data {
 				b.min = node
 			}
