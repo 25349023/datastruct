@@ -28,6 +28,7 @@ func (f *FibonacciHeap) Empty() bool {
 }
 
 // Insert x into the FibonacciHeap and return the inserted node.
+//
 // Amortized cost is O(1).
 func (f *FibonacciHeap) Insert(x int) DataNode {
 	node := &fHeapNode{data: x}
@@ -49,6 +50,7 @@ func (f *FibonacciHeap) Insert(x int) DataNode {
 
 // DeleteMin pops the minimum from the FibonacciHeap then returns it,
 // error if the heap is empty.
+//
 // Amortized cost is O(lg n).
 func (f *FibonacciHeap) DeleteMin() (int, error) {
 	if f.Empty() {
@@ -126,7 +128,8 @@ func (f *FibonacciHeap) relink(trees []*fHeapNode) {
 }
 
 // Meld two FibonacciHeap and leave other empty,
-// error if the underlying type of other is not FibonacciHeap
+// error if the underlying type of other is not FibonacciHeap.
+//
 // Amortized cost is O(1).
 func (f *FibonacciHeap) Meld(other MeldablePQ) error {
 	if other, ok := other.(*FibonacciHeap); ok {
@@ -154,7 +157,8 @@ func (f *FibonacciHeap) Meld(other MeldablePQ) error {
 }
 
 // Delete the specified arbitrary node in the FibonacciHeap f,
-// error if f is empty or the target's type is incorrect
+// error if f is empty or the target's type is incorrect.
+//
 // Amortized cost is O(lg n).
 func (f *FibonacciHeap) Delete(target DataNode) (int, error) {
 	if f.Empty() {
@@ -187,7 +191,8 @@ func (f *FibonacciHeap) Delete(target DataNode) (int, error) {
 }
 
 // DecreaseKey decrease the key of the specified node in f.
-// error if key is greater than original key or the target's type is incorrect
+// error if key is greater than original key or the target's type is incorrect.
+//
 // Amortized cost is O(1).
 func (f *FibonacciHeap) DecreaseKey(target DataNode, key int) error {
 	if target, ok := target.(*fHeapNode); ok {
