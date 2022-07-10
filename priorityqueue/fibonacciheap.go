@@ -28,7 +28,7 @@ func (f *FibonacciHeap) Empty() bool {
 }
 
 // Insert x into the FibonacciHeap and return the inserted node.
-func (f *FibonacciHeap) Insert(x int) BiDirTreeNode {
+func (f *FibonacciHeap) Insert(x int) DataNode {
 	node := &fHeapNode{data: x}
 
 	defer func() { f.n++ }()
@@ -145,7 +145,7 @@ func (f *FibonacciHeap) Meld(other MeldablePQ) error {
 }
 
 // Delete the specified arbitrary node in the FibonacciHeap f.
-func (f *FibonacciHeap) Delete(target BiDirTreeNode) (int, error) {
+func (f *FibonacciHeap) Delete(target DataNode) (int, error) {
 	if f.Empty() {
 		return 0, fmt.Errorf("cannot delete-min from empty binomial heap")
 	}
@@ -177,7 +177,7 @@ func (f *FibonacciHeap) Delete(target BiDirTreeNode) (int, error) {
 }
 
 // DecreaseKey decrease the key of the specified node in f.
-func (f *FibonacciHeap) DecreaseKey(target BiDirTreeNode, key int) error {
+func (f *FibonacciHeap) DecreaseKey(target DataNode, key int) error {
 	if target, ok := target.(*fHeapNode); ok {
 		if target.data < key {
 			return fmt.Errorf("new key is greater than original key")

@@ -25,8 +25,15 @@ func TestBinomialHeap_Empty(t *testing.T) {
 
 func TestBinomialHeap_Insert(t *testing.T) {
 	b := BinomialHeap{}
+
 	for _, v := range []int{5, 2, 4, 3, 1} {
-		b.Insert(v)
+		hd := b.Insert(v)
+		if _, ok := hd.(*bHeapNode); !ok {
+			t.Fatal("incorrect underlying type")
+		}
+		if hd.Data() != v {
+			t.Fatalf("got: %d, expect: %d", hd.Data(), v)
+		}
 	}
 
 	if b.min.data != 1 {
@@ -75,7 +82,7 @@ func TestBinomialHeap_Min(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			t.Fatalf("get: %d, expect: %d", y, a)
+			t.Fatalf("got: %d, expect: %d", y, a)
 		}
 	}
 }

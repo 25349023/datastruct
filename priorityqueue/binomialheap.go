@@ -26,7 +26,7 @@ func (b *BinomialHeap) Empty() bool {
 }
 
 // Insert x into the BinomialHeap and return the inserted node.
-func (b *BinomialHeap) Insert(x int) BiDirTreeNode {
+func (b *BinomialHeap) Insert(x int) DataNode {
 	node := &bHeapNode{data: x}
 
 	defer func() { b.n++ }()

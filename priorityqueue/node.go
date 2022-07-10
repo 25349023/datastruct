@@ -2,8 +2,12 @@ package priorityqueue
 
 import "reflect"
 
-type BiDirTreeNode interface {
+type DataNode interface {
 	Data() int
+}
+
+type BiDirTreeNode interface {
+	DataNode
 	Next() BiDirTreeNode
 	Prev() BiDirTreeNode
 	SetNext(n BiDirTreeNode)
