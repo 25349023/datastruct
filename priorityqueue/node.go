@@ -41,10 +41,10 @@ func mergeLists(x, y BiDirTreeNode) {
 }
 
 func joinMinTrees(x, y BiDirTreeNode) BiDirTreeNode {
-	if y == nil {
+	if isNilPtr(y) {
 		return x
 	}
-	if x == nil {
+	if isNilPtr(x) {
 		return y
 	}
 

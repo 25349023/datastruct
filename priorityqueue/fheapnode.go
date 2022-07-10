@@ -56,3 +56,9 @@ func (n *fHeapNode) AddChild(ch BiDirTreeNode) {
 		panic("the type of ch is incorrect")
 	}
 }
+
+func (n *fHeapNode) pruneParentFromChildren() {
+	for c := n.child; c != nil && c.parent != nil; c = c.next {
+		c.parent = nil
+	}
+}

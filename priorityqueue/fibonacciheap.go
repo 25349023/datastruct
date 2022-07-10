@@ -5,7 +5,7 @@ import (
 	"math"
 )
 
-var logPhi = math.Log2(math.Phi)
+var logPhi = math.Log(math.Phi)
 
 // FibonacciHeap implementation that is introduced in
 // 'Fundamentals of Data Structures in C'
@@ -56,6 +56,7 @@ func (f *FibonacciHeap) DeleteMin() (int, error) {
 	defer func() { f.n-- }()
 
 	minValue := f.min.data
+	f.min.pruneParentFromChildren()
 
 	if f.min.next == f.min {
 		f.min = findMinNode(f.min.child).(*fHeapNode)
@@ -168,7 +169,6 @@ func (f *FibonacciHeap) Delete(target DataNode) (int, error) {
 		if target.parent != nil {
 			f.cascadingCut(target.parent)
 		}
-		f.n--
 
 		return popValue, nil
 	} else {
@@ -206,9 +206,7 @@ func (f *FibonacciHeap) cutChild(target *fHeapNode, delete bool) {
 
 	if delete {
 		// set children's parents to nil
-		for c := target.child; c != nil && c.parent != nil; c = c.next {
-			c.parent = nil
-		}
+		target.pruneParentFromChildren()
 	} else {
 		target.parent = nil
 	}
