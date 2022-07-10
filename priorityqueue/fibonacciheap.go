@@ -58,19 +58,24 @@ func (f *FibonacciHeap) DeleteMin() (int, error) {
 	minValue := f.min.data
 	f.min.pruneParentFromChildren()
 
-	if f.min.next == f.min {
-		f.min = findMinNode(f.min.child).(*fHeapNode)
-		return minValue, nil
-	}
-
 	// Step 1: delete min node
-	f.min.prev.next = f.min.next
-	f.min.next.prev = f.min.prev
+	if f.min.next != f.min {
+		f.min.prev.next = f.min.next
+		f.min.next.prev = f.min.prev
 
-	subtree := f.min.child
-	f.min = f.min.next
-	if subtree != nil {
-		mergeLists(f.min, subtree)
+		subtree := f.min.child
+		f.min = f.min.next
+		if subtree != nil {
+			mergeLists(f.min, subtree)
+		}
+	} else if f.min.child == nil {
+		f.min = nil
+		return minValue, nil
+	} else {
+		// Note that in the case of FibonacciHeap,
+		// f.min.child may have trees of the same degree.
+		// We should merge them, too.
+		f.min = f.min.child
 	}
 
 	// Step 2: merge min trees with same degree
