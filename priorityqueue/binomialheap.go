@@ -26,6 +26,7 @@ func (b *BinomialHeap) Empty() bool {
 }
 
 // Insert x into the BinomialHeap and return the inserted node.
+// Amortized cost is O(1).
 func (b *BinomialHeap) Insert(x int) DataNode {
 	node := &bHeapNode{data: x}
 
@@ -47,6 +48,7 @@ func (b *BinomialHeap) Insert(x int) DataNode {
 
 // DeleteMin pops the minimum from the BinomialHeap then returns it,
 // error if the heap is empty.
+// Amortized cost is O(lg n).
 func (b *BinomialHeap) DeleteMin() (int, error) {
 	if b.Empty() {
 		return 0, fmt.Errorf("cannot delete-min from empty binomial heap")
@@ -118,6 +120,7 @@ func (b *BinomialHeap) relink(trees []*bHeapNode) {
 
 // Meld two BinomialHeap and leave other empty,
 // error if the underlying type of other is not BinomialHeap
+// Amortized cost is O(1).
 func (b *BinomialHeap) Meld(other MeldablePQ) error {
 	if other, ok := other.(*BinomialHeap); ok {
 		if other.Empty() {
