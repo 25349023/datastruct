@@ -60,7 +60,7 @@ func (b *BinomialHeap) DeleteMin() (int, error) {
 
 	minValue := b.min.data
 
-	if b.min.next == b.min {
+	if isOnly(b.min) {
 		b.min = findMinNode(b.min.child).(*bHeapNode)
 		return minValue, nil
 	}
