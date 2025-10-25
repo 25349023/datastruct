@@ -144,7 +144,7 @@ func (b *BinomialHeap) Meld(other MeldablePQ) error {
 
 		other.min, other.n = nil, 0
 		return nil
-	} else {
-		return fmt.Errorf("cannot meld with non binomial heap")
 	}
+
+	return fmt.Errorf("cannot meld with non binomial heap")
 }

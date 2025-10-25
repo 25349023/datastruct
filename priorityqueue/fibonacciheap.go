@@ -151,9 +151,9 @@ func (f *FibonacciHeap) Meld(other MeldablePQ) error {
 
 		other.min, other.n = nil, 0
 		return nil
-	} else {
-		return fmt.Errorf("cannot meld with non binomial heap")
 	}
+
+	return fmt.Errorf("cannot meld with non binomial heap")
 }
 
 // Delete the specified arbitrary node in the FibonacciHeap f,
@@ -184,12 +184,12 @@ func (f *FibonacciHeap) Delete(target DataNode) (int, error) {
 		}
 
 		return popValue, nil
-	} else {
-		return 0, fmt.Errorf("incorrect type of target")
 	}
+
+	return 0, fmt.Errorf("incorrect type of target")
 }
 
-// DecreaseKey decrease the key of the specified node in f.
+// DecreaseKey decrease the key of the specified node in f,
 // error if key is greater than original key or the target's type is incorrect.
 //
 // Amortized cost is O(1).
@@ -212,9 +212,9 @@ func (f *FibonacciHeap) DecreaseKey(target DataNode, key int) error {
 		}
 
 		return nil
-	} else {
-		return fmt.Errorf("incorrect type of target")
 	}
+
+	return fmt.Errorf("incorrect type of target")
 }
 
 func (f *FibonacciHeap) cutChild(target *fHeapNode, delete bool) {

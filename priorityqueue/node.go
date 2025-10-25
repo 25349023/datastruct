@@ -2,10 +2,14 @@ package priorityqueue
 
 import "reflect"
 
+// DataNode exposes only one API, which returns the contained data
 type DataNode interface {
 	Data() int
 }
 
+// BiDirTreeNode defines operations of bidirectional linked-list node,
+// which supports getting/setting next/prev node,
+// and add new node to the children list
 type BiDirTreeNode interface {
 	DataNode
 	Next() BiDirTreeNode
