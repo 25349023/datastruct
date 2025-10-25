@@ -172,40 +172,56 @@ func (rbt *RBTree[T]) insertFixup(z *RBNode[T]) {
 	}
 }
 
-// DrawTree have a max of 2-digit data to prevent weird output
+// DrawTree should restrict key data to a maximum of 2 digits to avoid layout distortion
 func (rbt *RBTree[T]) DrawTree() {
 	h := rbt.height(rbt.Root)
-	btm_width := int(math.Pow(2, float64(h))) * 2
+	btmWidth := int(math.Pow(2, float64(h))) * 2
+	pos := btmWidth/2 - 1
+	spaces := strings.Repeat("  ", pos)
 	red := color.FgRed.Render
 
-	type leveledNode struct {
+	type nodeInfo struct {
 		level int
 		dir   int
 		*RBNode[T]
 	}
 
-	queue := make([]leveledNode, 0, btm_width)
-	queue = append(queue, leveledNode{0, 0, rbt.Root})
+	queue := make([]nodeInfo, 0, btmWidth)
+	queue = append(queue, nodeInfo{0, 0, rbt.Root})
 	lastLvl := 0
 	for len(queue) > 0 {
 		x := queue[0].RBNode
 		lvl := queue[0].level
 		if lvl > lastLvl {
-			btm_width /= 2
-			fmt.Println("\n")
-			if btm_width == 1 {
+			btmWidth /= 2
+			fmt.Println()
+			if btmWidth == 1 {
 				break
 			}
+
+			pos = btmWidth/2 - 1
+			spaces = strings.Repeat("  ", pos)
+
+			// draw edges
+			for i := 0; i < len(queue); i++ {
+				fmt.Print(spaces)
+				if queue[i].RBNode == rbt.Nil {
+					fmt.Print("    ")
+				} else if queue[i].dir == 0 {
+					fmt.Printf("  ／")
+				} else {
+					fmt.Printf("＼  ")
+				}
+				fmt.Print(spaces)
+			}
+			fmt.Println()
 		}
 		lastLvl = lvl
 
-		//dir := queue[0].dir
 		queue = queue[1:]
-		queue = append(queue, leveledNode{lvl + 1, 0, x.left})
-		queue = append(queue, leveledNode{lvl + 1, 1, x.right})
+		queue = append(queue, nodeInfo{lvl + 1, 0, x.left})
+		queue = append(queue, nodeInfo{lvl + 1, 1, x.right})
 
-		pos := btm_width/2 - 1
-		spaces := strings.Repeat("  ", pos)
 		fmt.Print(spaces)
 		if x == rbt.Nil {
 			fmt.Print("    ")
