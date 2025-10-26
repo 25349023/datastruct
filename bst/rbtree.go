@@ -18,9 +18,7 @@ func (rbt *RBTree[T]) Init(less func(a, b T) bool) {
 	rbt.Nil = &RBNode[T]{
 		color: BLACK,
 	}
-	rbt.Nil.left = rbt.Nil
-	rbt.Nil.right = rbt.Nil
-	rbt.Nil.parent = rbt.Nil
+	rbt.Nil.left, rbt.Nil.right, rbt.Nil.parent = rbt.Nil, rbt.Nil, rbt.Nil
 	rbt.Root = rbt.Nil
 	rbt.Less = less
 }
@@ -47,6 +45,17 @@ func (rbt *RBTree[T]) Min() *RBNode[T] {
 	x := rbt.Root
 	for ; x.left != rbt.Nil; x = x.left {
 		fmt.Printf("%v ", x.Data)
+	}
+	return x
+}
+
+func (rbt *RBTree[T]) minUnder(node *RBNode[T]) *RBNode[T] {
+	if node == rbt.Nil {
+		return rbt.Nil
+	}
+
+	x := node
+	for ; x.left != rbt.Nil; x = x.left {
 	}
 	return x
 }
@@ -160,16 +169,117 @@ func (rbt *RBTree[T]) insertFixup(z *RBNode[T]) {
 				u.color = BLACK
 				z = z.parent.parent
 			} else {
-				if z == z.parent.left { // Case 2: z's uncle is black, z is right child
+				if z == z.parent.left { // Case 2: z's uncle is black, z is left child
 					rbt.rotateRight(z.parent)
 					z = z.right
 				}
-				z.parent.parent.color = RED // Case 3: z's uncle is black, z is left child
+				z.parent.parent.color = RED // Case 3: z's uncle is black, z is right child
 				z.parent.color = BLACK
 				rbt.rotateLeft(z.parent.parent)
 			}
 		}
 	}
+}
+
+func (rbt *RBTree[T]) Delete(z *RBNode[T]) {
+	y := z // y is the node to be deleted actually
+	yOriginalColor := y.color
+	x := rbt.Nil // x is the node that will replace y's original position
+
+	if z.left == rbt.Nil {
+		x = z.right
+		rbt.transplant(z, z.right)
+	} else if z.right == rbt.Nil {
+		x = z.left
+		rbt.transplant(z, z.left)
+	} else {
+		y = rbt.minUnder(z.right)
+		yOriginalColor = y.color
+		x = y.right
+
+		if y.parent != z {
+			rbt.transplant(y, y.right)
+			y.right = z.right
+			y.right.parent = y
+		} else {
+			x.parent = y // for the case that x is Nil
+		}
+		rbt.transplant(z, y)
+		y.left = z.left
+		y.left.parent = y
+		y.color = z.color
+	}
+
+	if yOriginalColor == BLACK {
+		rbt.deleteFixup(x)
+	}
+
+	// Correcting drawing
+	rbt.Nil.left, rbt.Nil.right, rbt.Nil.parent = rbt.Nil, rbt.Nil, rbt.Nil
+}
+
+func (rbt *RBTree[T]) deleteFixup(x *RBNode[T]) {
+	for x != rbt.Root && x.color == BLACK {
+		if x == x.parent.left {
+			w := x.parent.right
+			if w.color == RED { // Case 1: x's sibling is red
+				x.parent.color, w.color = RED, BLACK
+				rbt.rotateLeft(x.parent)
+				w = x.parent.right
+			}
+			// Case 2: w's both children are black
+			if w.left.color == BLACK && w.right.color == BLACK {
+				w.color = RED
+				x = x.parent
+			} else {
+				// Case 3: w.left is red, w.right is black
+				if w.right.color == BLACK {
+					w.color, w.left.color = RED, BLACK
+					rbt.rotateRight(w)
+					w = x.parent.right
+				}
+				// Case 4: w.right is red
+				x.parent.color, w.color = w.color, x.parent.color
+				rbt.rotateLeft(x.parent)
+				w.right.color = BLACK
+				x = rbt.Root
+			}
+		} else {
+			w := x.parent.left
+			if w.color == RED {
+				x.parent.color, w.color = RED, BLACK
+				rbt.rotateRight(x.parent)
+				w = x.parent.left
+			}
+			if w.left.color == BLACK && w.right.color == BLACK {
+				w.color = RED
+				x = x.parent
+			} else {
+				if w.left.color == BLACK {
+					w.color, w.right.color = RED, BLACK
+					rbt.rotateLeft(w)
+					w = x.parent.left
+				}
+				x.parent.color, w.color = w.color, x.parent.color
+				rbt.rotateRight(x.parent)
+				w.left.color = BLACK
+				x = rbt.Root
+			}
+		}
+	}
+	x.color = BLACK
+}
+
+func (rbt *RBTree[T]) transplant(u, v *RBNode[T]) {
+	if u.parent == rbt.Nil {
+		rbt.Root = v
+	}
+	if u == u.parent.left {
+		u.parent.left = v
+	} else {
+		u.parent.right = v
+	}
+	v.parent = u.parent
 }
 
 // DrawTree should restrict key data to a maximum of 2 digits to avoid layout distortion
@@ -226,9 +336,9 @@ func (rbt *RBTree[T]) DrawTree() {
 		if x == rbt.Nil {
 			fmt.Print("    ")
 		} else if x.color == RED {
-			fmt.Printf("%s%2d", red("██"), x.Data)
+			fmt.Printf("%s%2v", red("██"), x.Data)
 		} else {
-			fmt.Printf("██%2d", x.Data)
+			fmt.Printf("██%2v", x.Data)
 		}
 		fmt.Print(spaces)
 	}
