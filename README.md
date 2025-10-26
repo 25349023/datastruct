@@ -6,7 +6,7 @@ Implement some useful data structures using Go.
 
 ## Examples
 
-### priorityqueue
+### Priority Queue (Fibonacci Heap)
 ```go
 package main
 
@@ -40,6 +40,45 @@ func main() {
 		fmt.Println(m)
 	}
 }
+```
+
+### Red-Black Tree
+```go
+package main
+
+import (
+	"fmt"
+	"math/rand/v2"
+
+	"github.com/25349023/datastruct/bst"
+)
+
+func main() {
+	var tree bst.RBTree[int]
+	tree.Init(func(a, b int) bool {
+		return a < b
+	})
+
+	var nodes []*bst.RBNode[int]
+	fmt.Print("Insert: ")
+	for i := 0; i < 15; i++ {
+		v := rand.IntN(98) + 1
+		n := tree.Insert(v)
+		nodes = append(nodes, n)
+		fmt.Printf("%v ", v)
+	}
+	fmt.Println()
+	tree.DrawTree()
+
+	fmt.Print("Deleting Node: ")
+	for i := 7; i >= 0; i-- {
+		fmt.Printf("%v ", nodes[i].Data)
+		tree.Delete(nodes[i])
+	}
+	fmt.Println()
+	tree.DrawTree()
+}
+
 ```
 
 
