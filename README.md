@@ -78,8 +78,8 @@ func main() {
 	fmt.Println()
 	tree.DrawTree()
 }
-
 ```
-
+- The `DrawTree` method draws the red-black tree in ASCII text:
+  ![img.png](img.png)
 
 
