@@ -27,7 +27,7 @@ func (rbt *RBTree[T]) Equal(a, b RBNode[T]) bool {
 	return !rbt.Less(a.Data, b.Data) && !rbt.Less(b.Data, b.Data)
 }
 
-func (rbt *RBTree[T]) NewRBNode(data T) *RBNode[T] {
+func (rbt *RBTree[T]) newRBNode(data T) *RBNode[T] {
 	return &RBNode[T]{
 		Data:   data,
 		left:   rbt.Nil,
@@ -38,18 +38,10 @@ func (rbt *RBTree[T]) NewRBNode(data T) *RBNode[T] {
 }
 
 func (rbt *RBTree[T]) Min() *RBNode[T] {
-	if rbt.Root == rbt.Nil {
-		return rbt.Nil
-	}
-
-	x := rbt.Root
-	for ; x.left != rbt.Nil; x = x.left {
-		fmt.Printf("%v ", x.Data)
-	}
-	return x
+	return rbt.min(rbt.Root)
 }
 
-func (rbt *RBTree[T]) minUnder(node *RBNode[T]) *RBNode[T] {
+func (rbt *RBTree[T]) min(node *RBNode[T]) *RBNode[T] {
 	if node == rbt.Nil {
 		return rbt.Nil
 	}
@@ -61,24 +53,53 @@ func (rbt *RBTree[T]) minUnder(node *RBNode[T]) *RBNode[T] {
 }
 
 func (rbt *RBTree[T]) Max() *RBNode[T] {
-	if rbt.Root == rbt.Nil {
+	return rbt.max(rbt.Root)
+}
+
+func (rbt *RBTree[T]) max(node *RBNode[T]) *RBNode[T] {
+	if node == rbt.Nil {
 		return rbt.Nil
 	}
 
-	x := rbt.Root
+	x := node
 	for ; x.right != rbt.Nil; x = x.right {
-		fmt.Printf("%v ", x.Data)
 	}
 	return x
 }
 
-func (rbt *RBTree[T]) Inorder(node *RBNode[T]) {
+func (rbt *RBTree[T]) Next(node *RBNode[T]) *RBNode[T] {
+	if node.right != rbt.Nil {
+		return rbt.min(node.right)
+	}
+
+	x := node
+	for ; x != rbt.Root && x != x.parent.left; x = x.parent {
+	}
+	return x.parent
+}
+
+func (rbt *RBTree[T]) Prev(node *RBNode[T]) *RBNode[T] {
+	if node.left != rbt.Nil {
+		return rbt.max(node.left)
+	}
+
+	x := node
+	for ; x != rbt.Root && x != x.parent.right; x = x.parent {
+	}
+	return x.parent
+}
+
+func (rbt *RBTree[T]) Inorder() {
+	rbt.inorder(rbt.Root)
+}
+
+func (rbt *RBTree[T]) inorder(node *RBNode[T]) {
 	if node == rbt.Nil {
 		return
 	}
-	rbt.Inorder(node.left)
+	rbt.inorder(node.left)
 	fmt.Printf("%v ", node.Data)
-	rbt.Inorder(node.right)
+	rbt.inorder(node.right)
 }
 
 func (rbt *RBTree[T]) rotateLeft(x *RBNode[T]) {
@@ -122,7 +143,7 @@ func (rbt *RBTree[T]) rotateRight(x *RBNode[T]) {
 }
 
 func (rbt *RBTree[T]) Insert(data T) *RBNode[T] {
-	z := rbt.NewRBNode(data)
+	z := rbt.newRBNode(data)
 
 	rbt.Root = rbt.insertTo(rbt.Nil, rbt.Root, z)
 	rbt.insertFixup(z)
@@ -193,7 +214,7 @@ func (rbt *RBTree[T]) Delete(z *RBNode[T]) {
 		x = z.left
 		rbt.transplant(z, z.left)
 	} else {
-		y = rbt.minUnder(z.right)
+		y = rbt.min(z.right)
 		yOriginalColor = y.color
 		x = y.right
 
